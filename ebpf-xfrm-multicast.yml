@@ -1,0 +1,49 @@
+# Containerlab topology file to be able to test it in a container environment
+name: ebpf-xfrm-multicast
+
+topology:
+  nodes:
+    # machine to send traffic
+    alpine1:
+      kind: linux
+      image: alpine-bpf-python-tcpdump:latest
+      binds:
+        - /lib/modules:/lib/modules:ro
+        - /sys:/sys:ro
+        - /usr/src:/usr/src
+        - ebf:/app/ebpf
+    
+    # Alpine machine to test the eBPF module + IPsec uncryption
+    alpine2:
+      kind: linux
+      image: alpine-bpf-python-tcpdump:latest
+      binds:
+        - /lib/modules:/lib/modules:ro
+        - /sys:/sys:ro
+        - /usr/src:/usr/src
+        - ebf:/app/ebpf
+
+    host1:
+      kind: linux
+      image: alpine-bpf-python-tcpdump:latest
+      binds:
+        - /lib/modules:/lib/modules:ro
+        - /sys:/sys:ro
+        - /usr/src:/usr/src
+        - ebf:/app/ebpf
+
+    host2:
+      kind: linux
+      image: alpine-bpf-python-tcpdump:latest
+      binds:
+        - /lib/modules:/lib/modules:ro
+        - /sys:/sys:ro
+        - /usr/src:/usr/src
+        - ebf:/app/ebpf
+
+
+  links:
+    - endpoints: ["host1:et1", "alpine1:et1"]
+    - endpoints: ["alpine1:et2", "alpine2:et2"]
+    - endpoints: ["alpine2:et1", "host2:et1"]
+
